@@ -30,9 +30,6 @@
 			],
 			"transformations": [
 				{
-					"name": "ftrLoans"
-				},
-				{
 					"name": "jnr1"
 				},
 				{
@@ -71,8 +68,7 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
 				"     skipLines: 1) ~> srcAccounts",
-				"srcLoans filter(in(['A','C'],status)) ~> ftrLoans",
-				"ftrLoans, srcAccounts join(srcLoans@account_id == srcAccounts@account_id,",
+				"srcLoans, srcAccounts join(srcLoans@account_id == srcAccounts@account_id,",
 				"     joinType:'inner',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
