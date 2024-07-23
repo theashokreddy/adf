@@ -11,11 +11,19 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'adlsLoans'"
 		},
+		"loansAdls_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'loansAdls'"
+		},
 		"loansBlob_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'loansBlob'"
 		},
 		"adlsLoans_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://bankadls.dfs.core.windows.net/"
+		},
+		"loansAdls_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://bankadls.dfs.core.windows.net/"
 		}
@@ -136,21 +144,22 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "adlsLoans",
+					"referenceName": "loansAdls",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
 				"type": "Parquet",
 				"typeProperties": {
 					"location": {
-						"type": "AzureBlobFSLocation"
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "loansprocessed"
 					},
 					"compressionCodec": "snappy"
 				},
 				"schema": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/adlsLoans')]"
+				"[concat(variables('factoryId'), '/linkedServices/loansAdls')]"
 			]
 		},
 		{
@@ -243,6 +252,23 @@
 					"accountKey": {
 						"type": "SecureString",
 						"value": "[parameters('adlsLoans_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/loansAdls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('loansAdls_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('loansAdls_accountKey')]"
 					}
 				}
 			},

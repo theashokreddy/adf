@@ -8,10 +8,16 @@
 		"adlsLoans_accountKey": {
 			"value": ""
 		},
+		"loansAdls_accountKey": {
+			"value": ""
+		},
 		"loansBlob_connectionString": {
 			"value": ""
 		},
 		"adlsLoans_properties_typeProperties_url": {
+			"value": "https://bankadls.dfs.core.windows.net/"
+		},
+		"loansAdls_properties_typeProperties_url": {
 			"value": "https://bankadls.dfs.core.windows.net/"
 		}
 	}

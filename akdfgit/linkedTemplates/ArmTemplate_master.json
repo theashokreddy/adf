@@ -11,11 +11,19 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'adlsLoans'"
 		},
+		"loansAdls_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'loansAdls'"
+		},
 		"loansBlob_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'loansBlob'"
 		},
 		"adlsLoans_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://bankadls.dfs.core.windows.net/"
+		},
+		"loansAdls_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://bankadls.dfs.core.windows.net/"
 		},
@@ -49,11 +57,17 @@
 					"adlsLoans_accountKey": {
 						"value": "[parameters('adlsLoans_accountKey')]"
 					},
+					"loansAdls_accountKey": {
+						"value": "[parameters('loansAdls_accountKey')]"
+					},
 					"loansBlob_connectionString": {
 						"value": "[parameters('loansBlob_connectionString')]"
 					},
 					"adlsLoans_properties_typeProperties_url": {
 						"value": "[parameters('adlsLoans_properties_typeProperties_url')]"
+					},
+					"loansAdls_properties_typeProperties_url": {
+						"value": "[parameters('loansAdls_properties_typeProperties_url')]"
 					}
 				}
 			},
