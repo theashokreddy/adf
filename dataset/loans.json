@@ -1,0 +1,24 @@
+{
+	"name": "loans",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "loansBlob",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "completedloan.csv",
+				"folderPath": "lpetrocelli-retail-banking-demo-data",
+				"container": "jul2024"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
