@@ -2,14 +2,15 @@
 	"name": "aggLoans",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "adlsLoans",
+			"referenceName": "loansAdls",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
 		"type": "Parquet",
 		"typeProperties": {
 			"location": {
-				"type": "AzureBlobFSLocation"
+				"type": "AzureBlobFSLocation",
+				"fileSystem": "loansprocessed"
 			},
 			"compressionCodec": "snappy"
 		},
