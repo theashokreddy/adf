@@ -19,6 +19,35 @@
 			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
-		"schema": []
+		"schema": [
+			{
+				"name": "account_id",
+				"type": "String"
+			},
+			{
+				"name": "district_id",
+				"type": "String"
+			},
+			{
+				"name": "frequency",
+				"type": "String"
+			},
+			{
+				"name": "parseddate",
+				"type": "String"
+			},
+			{
+				"name": "year",
+				"type": "String"
+			},
+			{
+				"name": "month",
+				"type": "String"
+			},
+			{
+				"name": "day",
+				"type": "String"
+			}
+		]
 	}
 }
