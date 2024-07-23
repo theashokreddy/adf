@@ -1,0 +1,318 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "akdfgit"
+		},
+		"adlsLoans_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'adlsLoans'"
+		},
+		"loansBlob_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'loansBlob'"
+		},
+		"adlsLoans_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://bankadls.dfs.core.windows.net/"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/accounts')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "loansBlob",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "completedacct.csv",
+						"folderPath": "lpetrocelli-retail-banking-demo-data",
+						"container": "jul2024"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "account_id",
+						"type": "String"
+					},
+					{
+						"name": "district_id",
+						"type": "String"
+					},
+					{
+						"name": "frequency",
+						"type": "String"
+					},
+					{
+						"name": "parseddate",
+						"type": "String"
+					},
+					{
+						"name": "year",
+						"type": "String"
+					},
+					{
+						"name": "month",
+						"type": "String"
+					},
+					{
+						"name": "day",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/loansBlob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/aggLoans')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "adlsLoans",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/adlsLoans')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/loans')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "loansBlob",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "completedloan.csv",
+						"folderPath": "lpetrocelli-retail-banking-demo-data",
+						"container": "jul2024"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "loan_id",
+						"type": "String"
+					},
+					{
+						"name": "account_id",
+						"type": "String"
+					},
+					{
+						"name": "amount",
+						"type": "String"
+					},
+					{
+						"name": "duration",
+						"type": "String"
+					},
+					{
+						"name": "payments",
+						"type": "String"
+					},
+					{
+						"name": "status",
+						"type": "String"
+					},
+					{
+						"name": "year",
+						"type": "String"
+					},
+					{
+						"name": "month",
+						"type": "String"
+					},
+					{
+						"name": "day",
+						"type": "String"
+					},
+					{
+						"name": "fulldate",
+						"type": "String"
+					},
+					{
+						"name": "location",
+						"type": "String"
+					},
+					{
+						"name": "purpose",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/loansBlob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/adlsLoans')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('adlsLoans_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('adlsLoans_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/loansBlob')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('loansBlob_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "loans",
+								"type": "DatasetReference"
+							},
+							"name": "srcLoans"
+						},
+						{
+							"dataset": {
+								"referenceName": "accounts",
+								"type": "DatasetReference"
+							},
+							"name": "srcAccounts"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "aggLoans",
+								"type": "DatasetReference"
+							},
+							"name": "tgtAggLoans"
+						}
+					],
+					"transformations": [
+						{
+							"name": "ftrLoans"
+						},
+						{
+							"name": "jnr1"
+						},
+						{
+							"name": "aggLoans"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          loan_id as string,",
+						"          account_id as string,",
+						"          amount as string,",
+						"          duration as string,",
+						"          payments as string,",
+						"          status as string,",
+						"          year as string,",
+						"          month as string,",
+						"          day as string,",
+						"          fulldate as string,",
+						"          location as string,",
+						"          purpose as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     skipLines: 1) ~> srcLoans",
+						"source(output(",
+						"          account_id as string,",
+						"          district_id as string,",
+						"          frequency as string,",
+						"          parseddate as string,",
+						"          year as string,",
+						"          month as string,",
+						"          day as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     skipLines: 1) ~> srcAccounts",
+						"srcLoans filter(in(['A','C'],status)) ~> ftrLoans",
+						"ftrLoans, srcAccounts join(srcLoans@account_id == srcAccounts@account_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> jnr1",
+						"jnr1 aggregate(groupBy(district_id),",
+						"     amount = sum(toInteger(amount))) ~> aggLoans",
+						"aggLoans sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'parquet',",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 1) ~> tgtAggLoans"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/loans')]",
+				"[concat(variables('factoryId'), '/datasets/accounts')]",
+				"[concat(variables('factoryId'), '/datasets/aggLoans')]"
+			]
+		}
+	]
+}
