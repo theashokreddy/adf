@@ -1,0 +1,66 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "loans",
+						"type": "DatasetReference"
+					},
+					"name": "srcLoans"
+				},
+				{
+					"dataset": {
+						"referenceName": "accounts",
+						"type": "DatasetReference"
+					},
+					"name": "srcAccounts"
+				}
+			],
+			"sinks": [
+				{
+					"name": "tgtAggLoans"
+				}
+			],
+			"transformations": [
+				{
+					"name": "ftrLoans"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          loan_id as string,",
+				"          account_id as string,",
+				"          amount as string,",
+				"          duration as string,",
+				"          payments as string,",
+				"          status as string,",
+				"          year as string,",
+				"          month as string,",
+				"          day as string,",
+				"          fulldate as string,",
+				"          location as string,",
+				"          purpose as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     skipLines: 1) ~> srcLoans",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     skipLines: 1) ~> srcAccounts",
+				"srcLoans filter(ERROR_FUNCTION('')) ~> ftrLoans",
+				"ftrLoans sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 1) ~> tgtAggLoans"
+			]
+		}
+	}
+}
