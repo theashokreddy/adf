@@ -21,12 +21,22 @@
 			],
 			"sinks": [
 				{
+					"dataset": {
+						"referenceName": "aggLoans",
+						"type": "DatasetReference"
+					},
 					"name": "tgtAggLoans"
 				}
 			],
 			"transformations": [
 				{
 					"name": "ftrLoans"
+				},
+				{
+					"name": "jnr1"
+				},
+				{
+					"name": "aggLoans"
 				}
 			],
 			"scriptLines": [
@@ -61,13 +71,22 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
 				"     skipLines: 1) ~> srcAccounts",
-				"srcLoans filter(ERROR_FUNCTION('')) ~> ftrLoans",
-				"ftrLoans sink(validateSchema: false,",
+				"srcLoans filter(in(['A','C'],status)) ~> ftrLoans",
+				"ftrLoans, srcAccounts join(srcLoans@account_id == srcAccounts@account_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> jnr1",
+				"jnr1 aggregate(groupBy(district_id),",
+				"     amount = sum(toInteger(amount))) ~> aggLoans",
+				"aggLoans sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     store: 'cache',",
-				"     format: 'inline',",
-				"     output: false,",
 				"     saveOrder: 1) ~> tgtAggLoans"
 			]
 		}
